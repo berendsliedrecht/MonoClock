@@ -89,25 +89,16 @@ private fun PausedTimer(viewModel: ClockViewModel, remaining: Long) {
 
 @Composable
 private fun TimerPicker(viewModel: ClockViewModel) {
-    val duration = viewModel.timerDuration
-    val h = (duration / 3_600_000L).toInt()
-    val m = (duration % 3_600_000L / 60_000L).toInt()
-    val s = (duration % 60_000L / 1000L).toInt()
-    fun set(h2: Int = h, m2: Int = m, s2: Int = s) =
-        viewModel.updateTimerDuration((h2 * 3600L + m2 * 60L + s2) * 1000L)
-
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        StepperColumn(h, max = 23) { set(h2 = it) }
-        Colon()
-        StepperColumn(m, max = 59) { set(m2 = it) }
-        Colon()
-        StepperColumn(s, max = 59) { set(s2 = it) }
+    val minutes = (viewModel.timerDuration / 60_000L).toInt().coerceIn(1, 99)
+    StepperColumn(minutes, max = 99) {
+        viewModel.updateTimerDuration(it.coerceAtLeast(1) * 60_000L)
     }
+    TextMMD("minutes", fontSize = 16.sp)
     Spacer(Modifier.height(24.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        for ((label, minutes) in listOf("1 min" to 1, "5 min" to 5, "10 min" to 10, "30 min" to 30)) {
-            OutlinedButtonMMD(onClick = { viewModel.updateTimerDuration(minutes * 60_000L) }) {
-                TextMMD(label, fontSize = 14.sp)
+        for (preset in listOf(1, 5, 10, 30)) {
+            OutlinedButtonMMD(onClick = { viewModel.updateTimerDuration(preset * 60_000L) }) {
+                TextMMD("$preset min", fontSize = 14.sp)
             }
         }
     }
@@ -116,14 +107,6 @@ private fun TimerPicker(viewModel: ClockViewModel) {
         onClick = { viewModel.startTimer(viewModel.timerDuration) },
         modifier = Modifier.height(56.dp),
     ) { TextMMD("Start", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
-}
-
-@Composable
-private fun Colon() {
-    TextMMD(
-        ":", fontSize = 56.sp, fontWeight = FontWeight.Black,
-        modifier = Modifier.padding(horizontal = 8.dp),
-    )
 }
 
 @Composable

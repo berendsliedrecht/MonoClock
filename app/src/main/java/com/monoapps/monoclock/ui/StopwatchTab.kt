@@ -31,7 +31,8 @@ import java.util.Locale
 fun StopwatchTab(viewModel: ClockViewModel, modifier: Modifier) {
     val running = viewModel.stopwatchRunning
     var elapsed by remember { mutableLongStateOf(viewModel.stopwatchElapsed()) }
-    LaunchedEffect(running) {
+    // Re-key on accumulated so Pause and Reset update the display immediately.
+    LaunchedEffect(running, viewModel.stopwatchAccumulated) {
         elapsed = viewModel.stopwatchElapsed()
         // One tick per second: e-ink refreshes are too slow for centiseconds.
         while (running) {

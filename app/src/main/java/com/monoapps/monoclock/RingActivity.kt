@@ -1,7 +1,5 @@
 package com.monoapps.monoclock
 
-import android.app.KeyguardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -30,10 +28,10 @@ import java.util.Date
 class RingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Show over the keyguard without unlocking: requestDismissKeyguard
+        // would pop the PIN pad as soon as the alarm rings.
         setShowWhenLocked(true)
         setTurnScreenOn(true)
-        (getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager)
-            .requestDismissKeyguard(this, null)
         setContent { ThemeMMD { RingScreen() } }
     }
 
