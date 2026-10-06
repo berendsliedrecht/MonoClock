@@ -95,7 +95,7 @@ fun StepperColumn(value: Int, max: Int, onChange: (Int) -> Unit) {
 }
 
 @Composable
-private fun RepeatButton(label: String, onStep: () -> Unit) {
+fun RepeatButton(label: String, onStep: () -> Unit) {
     val step by rememberUpdatedState(onStep)
     val scope = rememberCoroutineScope()
     Box(

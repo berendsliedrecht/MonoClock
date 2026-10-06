@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.HourglassEmpty
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,7 +40,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.monoapps.monoclock.data.Alarm
 import com.monoapps.monoclock.ui.AlarmEditScreen
 import com.monoapps.monoclock.ui.AlarmTab
-import com.monoapps.monoclock.ui.ClockTab
 import com.monoapps.monoclock.ui.StopwatchTab
 import com.monoapps.monoclock.ui.TimerTab
 import com.mudita.mmd.ThemeMMD
@@ -51,7 +49,6 @@ import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
 
 enum class Tab(val title: String, val icon: ImageVector) {
-    Clock("Clock", Icons.Outlined.Schedule),
     Alarms("Alarm", Icons.Outlined.Alarm),
     Timer("Timer", Icons.Outlined.HourglassEmpty),
     Stopwatch("Stopwatch", Icons.Outlined.Timer),
@@ -59,7 +56,7 @@ enum class Tab(val title: String, val icon: ImageVector) {
 
 class MainActivity : ComponentActivity() {
     private val viewModel: ClockViewModel by viewModels()
-    private val tabState = mutableStateOf(Tab.Clock)
+    private val tabState = mutableStateOf(Tab.Alarms)
     private val editorState = mutableStateOf<AlarmEditor?>(null)
 
     /** Open alarm editor; [alarm] null means a new alarm. */
@@ -172,7 +169,6 @@ class MainActivity : ComponentActivity() {
             if (editing != null) {
                 AlarmEditScreen(viewModel, editing.alarm, modifier, onDone = { editor = null })
             } else when (tab) {
-                Tab.Clock -> ClockTab(viewModel, modifier)
                 Tab.Alarms -> AlarmTab(viewModel, modifier, onEdit = { editor = AlarmEditor(it) })
                 Tab.Timer -> TimerTab(viewModel, modifier)
                 Tab.Stopwatch -> StopwatchTab(viewModel, modifier)

@@ -1,6 +1,6 @@
 # MonoClock
 
-A clock app for the Mudita Kompakt, built with MMD (Mudita Mindful Design). It shows the time, rings alarms, counts down a timer, and runs a stopwatch. Everything is black and white and nothing animates, so it stays calm on the e-ink screen.
+A clock app for the Mudita Kompakt, built with MMD (Mudita Mindful Design). It rings alarms, counts down a timer, and runs a stopwatch. Everything is black and white and nothing animates, so it stays calm on the e-ink screen.
 
 The app leans on Android's own machinery wherever it can: alarms and the timer are scheduled through the system alarm clock service (they ring on time even when the phone sleeps, and the next alarm shows in the status bar), the sound is your system default alarm sound at the alarm volume, and other apps can set alarms or timers here through the standard Android clock intents.
 
@@ -13,9 +13,7 @@ or build from source:
 
 ## How it works
 
-The Clock tab shows the current time and date, and the next alarm if one is set. Time format follows your system 12/24-hour setting.
-
-Alarms can repeat on chosen weekdays. An alarm without repeat days rings once and switches itself off. When an alarm rings, the screen wakes with Dismiss and Snooze buttons; snooze waits ten minutes. Ringing stops on its own after ten minutes if you don't react. Alarms survive a reboot.
+Alarm times follow your system 12/24-hour setting. Alarms can repeat on chosen weekdays. An alarm without repeat days rings once and switches itself off. When an alarm rings, the screen wakes with Dismiss and Snooze buttons; snooze waits ten minutes. Ringing stops on its own after ten minutes if you don't react. Alarms survive a reboot.
 
 The timer counts down a number of minutes (1 to 99, with quick presets) and rings like an alarm when it finishes. It keeps running when you leave the app or the phone sleeps.
 

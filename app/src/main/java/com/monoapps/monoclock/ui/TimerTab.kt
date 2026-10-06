@@ -90,11 +90,18 @@ private fun PausedTimer(viewModel: ClockViewModel, remaining: Long) {
 @Composable
 private fun TimerPicker(viewModel: ClockViewModel) {
     val minutes = (viewModel.timerDuration / 60_000L).toInt().coerceIn(1, 99)
-    StepperColumn(minutes, max = 99) {
-        viewModel.updateTimerDuration(it.coerceAtLeast(1) * 60_000L)
+    Spacer(Modifier.height(32.dp))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        RepeatButton("−") { viewModel.updateTimerDuration((minutes - 1).coerceAtLeast(1) * 60_000L) }
+        TextMMD(
+            formatDuration(minutes * 60_000L),
+            fontSize = 64.sp,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+        RepeatButton("+") { viewModel.updateTimerDuration((minutes + 1).coerceAtMost(99) * 60_000L) }
     }
-    TextMMD("minutes", fontSize = 16.sp)
-    Spacer(Modifier.height(24.dp))
+    Spacer(Modifier.height(40.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         for (preset in listOf(1, 5, 10, 30)) {
             OutlinedButtonMMD(onClick = { viewModel.updateTimerDuration(preset * 60_000L) }) {

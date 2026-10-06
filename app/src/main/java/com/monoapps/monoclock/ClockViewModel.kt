@@ -65,9 +65,6 @@ class ClockViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setAlarmEnabled(alarm: Alarm, enabled: Boolean) = updateAlarm(alarm.copy(enabled = enabled))
 
-    fun nextAlarm(): Alarm? =
-        alarms.filter { it.enabled }.minByOrNull { it.nextTrigger() }
-
     private fun saveAlarms(list: List<Alarm>) {
         val sorted = list.sortedWith(compareBy({ it.hour }, { it.minute }))
         store.saveAlarms(sorted)
