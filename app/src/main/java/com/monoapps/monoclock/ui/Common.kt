@@ -88,7 +88,7 @@ fun StepperColumn(value: Int, max: Int, onChange: (Int) -> Unit) {
         RepeatButton("+") { onChange((current + 1).mod(max + 1)) }
         TextMMD(
             String.format(Locale.US, "%02d", value),
-            fontSize = 56.sp,
+            fontSize = 44.sp,
             fontWeight = FontWeight.Black,
         )
         RepeatButton("−") { onChange((current - 1).mod(max + 1)) }
@@ -101,7 +101,7 @@ fun RepeatButton(label: String, onStep: () -> Unit) {
     val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
-            .size(56.dp)
+            .size(48.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(12.dp))
             .pointerInput(Unit) {
                 detectTapGestures(onPress = {
@@ -120,7 +120,7 @@ fun RepeatButton(label: String, onStep: () -> Unit) {
             },
         contentAlignment = Alignment.Center,
     ) {
-        TextMMD(label, fontSize = 28.sp)
+        TextMMD(label, fontSize = 24.sp)
     }
 }
 

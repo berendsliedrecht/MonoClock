@@ -145,14 +145,14 @@ fun AlarmEditScreen(
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(16.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             StepperColumn(hour, max = 23) { hour = it }
-            TextMMD(":", fontSize = 56.sp, fontWeight = FontWeight.Black,
+            TextMMD(":", fontSize = 44.sp, fontWeight = FontWeight.Black,
                 modifier = Modifier.padding(horizontal = 16.dp))
             StepperColumn(minute, max = 59) { minute = it }
         }
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(20.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -181,9 +181,9 @@ fun AlarmEditScreen(
                 }
             }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(6.dp))
         TextMMD(describeDays(days), fontSize = 14.sp)
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(20.dp))
         val soundName = sound
             ?.let { RingtoneManager.getRingtone(context, Uri.parse(it))?.getTitle(context) }
             ?: "Default"
@@ -202,28 +202,32 @@ fun AlarmEditScreen(
                         )
                 )
             },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
+            modifier = Modifier.fillMaxWidth().height(48.dp),
         ) { TextMMD("Sound: $soundName", fontSize = 16.sp) }
-        Spacer(Modifier.height(32.dp))
-        OutlinedButtonMMD(
-            onClick = {
-                if (alarm == null) viewModel.addAlarm(hour, minute, days, sound)
-                else viewModel.updateAlarm(
-                    alarm.copy(hour = hour, minute = minute, days = days, enabled = true, sound = sound)
-                )
-                onDone()
-            },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-        ) { TextMMD("Save", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
-        if (alarm != null) {
-            Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            if (alarm != null) {
+                OutlinedButtonMMD(
+                    onClick = {
+                        viewModel.deleteAlarm(alarm)
+                        onDone()
+                    },
+                    modifier = Modifier.weight(1f).height(48.dp),
+                ) { TextMMD("Delete", fontSize = 18.sp) }
+            }
             OutlinedButtonMMD(
                 onClick = {
-                    viewModel.deleteAlarm(alarm)
+                    if (alarm == null) viewModel.addAlarm(hour, minute, days, sound)
+                    else viewModel.updateAlarm(
+                        alarm.copy(hour = hour, minute = minute, days = days, enabled = true, sound = sound)
+                    )
                     onDone()
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-            ) { TextMMD("Delete", fontSize = 18.sp) }
+                modifier = Modifier.weight(1f).height(48.dp),
+            ) { TextMMD("Save", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
         }
     }
 }
