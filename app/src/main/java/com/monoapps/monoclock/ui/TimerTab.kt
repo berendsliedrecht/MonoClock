@@ -90,42 +90,55 @@ private fun PausedTimer(viewModel: ClockViewModel, remaining: Long) {
 
 @Composable
 private fun TimerPicker(viewModel: ClockViewModel) {
-    val minutes = (viewModel.timerDuration / 60_000L).toInt().coerceIn(1, 99)
+    val duration = viewModel.timerDuration
     Spacer(Modifier.height(32.dp))
     Row(verticalAlignment = Alignment.CenterVertically) {
-        RepeatButton("−") { viewModel.updateTimerDuration((minutes - 1).coerceAtLeast(1) * 60_000L) }
+        RepeatButton("−") { viewModel.updateTimerDuration(duration - 60_000L) }
         TextMMD(
-            formatDuration(minutes * 60_000L),
-            fontSize = 64.sp,
+            formatDuration(duration),
+            fontSize = 48.sp,
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(horizontal = 20.dp),
         )
-        RepeatButton("+") { viewModel.updateTimerDuration((minutes + 1).coerceAtMost(99) * 60_000L) }
+        RepeatButton("+") { viewModel.updateTimerDuration(duration + 60_000L) }
     }
     Spacer(Modifier.height(40.dp))
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        for (presetRow in listOf(listOf(1, 5), listOf(10, 30))) {
+        val presets = listOf(
+            listOf("+5 min" to 5 * 60_000L, "+10 min" to 10 * 60_000L),
+            listOf("+30 min" to 30 * 60_000L, "+1 h" to 3_600_000L),
+        )
+        for (presetRow in presets) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                for (preset in presetRow) {
+                for ((label, add) in presetRow) {
                     OutlinedButtonMMD(
-                        onClick = { viewModel.updateTimerDuration(preset * 60_000L) },
+                        onClick = { viewModel.updateTimerDuration(duration + add) },
                         modifier = Modifier.weight(1f),
-                    ) { TextMMD("$preset min", fontSize = 14.sp) }
+                    ) { TextMMD(label, fontSize = 14.sp) }
                 }
             }
         }
     }
     Spacer(Modifier.height(48.dp))
-    OutlinedButtonMMD(
-        onClick = { viewModel.startTimer(viewModel.timerDuration) },
-        modifier = Modifier.height(56.dp),
-    ) { TextMMD("Start", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        OutlinedButtonMMD(
+            onClick = { viewModel.updateTimerDuration(0) },
+            modifier = Modifier.weight(1f).height(56.dp),
+        ) { TextMMD("Reset", fontSize = 18.sp) }
+        OutlinedButtonMMD(
+            onClick = { viewModel.startTimer(viewModel.timerDuration) },
+            modifier = Modifier.weight(1f).height(56.dp),
+        ) { TextMMD("Start", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
+    }
 }
 
 @Composable

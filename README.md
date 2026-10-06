@@ -15,7 +15,7 @@ or build from source:
 
 Alarm times follow your system 12/24-hour setting. Alarms can repeat on chosen weekdays. An alarm without repeat days rings once and switches itself off. When an alarm rings, the screen wakes with Dismiss and Snooze buttons; snooze waits ten minutes. Ringing stops on its own after ten minutes if you don't react. Alarms survive a reboot.
 
-The timer counts down a number of minutes (1 to 99, with quick presets) and rings like an alarm when it finishes. It keeps running when you leave the app or the phone sleeps.
+The timer counts down any duration up to 99 hours: build it up with the +5/+10/+30 minute and +1 hour buttons, fine-tune by the minute, and it rings like an alarm when it finishes. It keeps running when you leave the app or the phone sleeps.
 
 The stopwatch counts whole seconds (the e-ink screen is too slow for anything faster) and supports laps. It keeps counting while the app is closed, but resets on reboot.
 
