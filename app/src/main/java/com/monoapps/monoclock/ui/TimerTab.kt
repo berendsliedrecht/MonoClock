@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -102,10 +103,21 @@ private fun TimerPicker(viewModel: ClockViewModel) {
         RepeatButton("+") { viewModel.updateTimerDuration((minutes + 1).coerceAtMost(99) * 60_000L) }
     }
     Spacer(Modifier.height(40.dp))
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        for (preset in listOf(1, 5, 10, 30)) {
-            OutlinedButtonMMD(onClick = { viewModel.updateTimerDuration(preset * 60_000L) }) {
-                TextMMD("$preset min", fontSize = 14.sp)
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        for (presetRow in listOf(listOf(1, 5), listOf(10, 30))) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                for (preset in presetRow) {
+                    OutlinedButtonMMD(
+                        onClick = { viewModel.updateTimerDuration(preset * 60_000L) },
+                        modifier = Modifier.weight(1f),
+                    ) { TextMMD("$preset min", fontSize = 14.sp) }
+                }
             }
         }
     }

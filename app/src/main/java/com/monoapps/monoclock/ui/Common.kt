@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -101,7 +102,7 @@ fun RepeatButton(label: String, onStep: () -> Unit) {
     Box(
         modifier = Modifier
             .size(56.dp)
-            .border(1.dp, Color.Black, CircleShape)
+            .border(1.dp, Color.Black, RoundedCornerShape(12.dp))
             .pointerInput(Unit) {
                 detectTapGestures(onPress = {
                     step()
