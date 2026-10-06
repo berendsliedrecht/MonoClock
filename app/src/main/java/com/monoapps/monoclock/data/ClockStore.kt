@@ -24,6 +24,7 @@ class ClockStore(context: Context) {
                 minute = o.getInt("minute"),
                 days = (0 until days.length()).map { days.getInt(it) }.toSet(),
                 enabled = o.getBoolean("enabled"),
+                sound = o.optString("sound", "").takeIf { it.isNotEmpty() },
             )
         }
     }
@@ -38,6 +39,7 @@ class ClockStore(context: Context) {
                     .put("minute", a.minute)
                     .put("days", JSONArray(a.days.sorted()))
                     .put("enabled", a.enabled)
+                    .put("sound", a.sound ?: "")
             )
         }
         prefs.edit().putString("alarms", arr.toString()).commit()

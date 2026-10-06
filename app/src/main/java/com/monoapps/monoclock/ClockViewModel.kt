@@ -45,8 +45,8 @@ class ClockViewModel(application: Application) : AndroidViewModel(application) {
 
     // Alarms
 
-    fun addAlarm(hour: Int, minute: Int, days: Set<Int>): Alarm {
-        val alarm = Alarm(store.nextAlarmId(), hour, minute, days, enabled = true)
+    fun addAlarm(hour: Int, minute: Int, days: Set<Int>, sound: String? = null): Alarm {
+        val alarm = Alarm(store.nextAlarmId(), hour, minute, days, enabled = true, sound = sound)
         saveAlarms(alarms + alarm)
         AlarmScheduler.scheduleAlarm(context, alarm)
         return alarm

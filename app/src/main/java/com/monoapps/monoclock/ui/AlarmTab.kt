@@ -2,8 +2,12 @@ package com.monoapps.monoclock.ui
 
 import android.app.AlarmManager
 import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -116,9 +120,24 @@ fun AlarmEditScreen(
     modifier: Modifier,
     onDone: () -> Unit,
 ) {
+    val context = LocalContext.current
     var hour by remember { mutableIntStateOf(alarm?.hour ?: 7) }
     var minute by remember { mutableIntStateOf(alarm?.minute ?: 0) }
     var days by remember { mutableStateOf(alarm?.days ?: emptySet<Int>()) }
+    var sound by remember { mutableStateOf(alarm?.sound) }
+
+    val defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+    val pickSound = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            @Suppress("DEPRECATION")
+            val picked = result.data
+                ?.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            // Picking "Default" stores null so the alarm follows the system setting.
+            sound = picked?.takeIf { it != defaultUri }?.toString()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -164,11 +183,34 @@ fun AlarmEditScreen(
         }
         Spacer(Modifier.height(8.dp))
         TextMMD(describeDays(days), fontSize = 14.sp)
-        Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(32.dp))
+        val soundName = sound
+            ?.let { RingtoneManager.getRingtone(context, Uri.parse(it))?.getTitle(context) }
+            ?: "Default"
         OutlinedButtonMMD(
             onClick = {
-                if (alarm == null) viewModel.addAlarm(hour, minute, days)
-                else viewModel.updateAlarm(alarm.copy(hour = hour, minute = minute, days = days, enabled = true))
+                pickSound.launch(
+                    Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+                        .putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+                        .putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Alarm sound")
+                        .putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
+                        .putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+                        .putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, defaultUri)
+                        .putExtra(
+                            RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                            sound?.let(Uri::parse) ?: defaultUri,
+                        )
+                )
+            },
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+        ) { TextMMD("Sound: $soundName", fontSize = 16.sp) }
+        Spacer(Modifier.height(32.dp))
+        OutlinedButtonMMD(
+            onClick = {
+                if (alarm == null) viewModel.addAlarm(hour, minute, days, sound)
+                else viewModel.updateAlarm(
+                    alarm.copy(hour = hour, minute = minute, days = days, enabled = true, sound = sound)
+                )
                 onDone()
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),

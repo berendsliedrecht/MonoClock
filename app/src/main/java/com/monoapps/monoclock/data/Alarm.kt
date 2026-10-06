@@ -5,7 +5,8 @@ import java.util.Calendar
 /**
  * A single alarm. [days] holds [Calendar] day-of-week constants
  * (SUNDAY=1..SATURDAY=7); empty means a one-shot alarm that disables
- * itself after ringing.
+ * itself after ringing. [sound] is a ringtone Uri string; null means the
+ * system default alarm sound.
  */
 data class Alarm(
     val id: Int,
@@ -13,6 +14,7 @@ data class Alarm(
     val minute: Int,
     val days: Set<Int>,
     val enabled: Boolean,
+    val sound: String? = null,
 ) {
     val repeating: Boolean get() = days.isNotEmpty()
 
