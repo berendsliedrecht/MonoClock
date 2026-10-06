@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.monoapps.monoclock.ui
 
 import android.app.AlarmManager
@@ -10,8 +12,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.monoapps.monoclock.ClockViewModel
 import com.monoapps.monoclock.data.Alarm
+import com.mudita.mmd.components.bottom_sheet.ModalBottomSheetMMD
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
 import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.lazy.LazyColumnMMD
@@ -48,6 +50,34 @@ import com.mudita.mmd.components.text.TextMMD
 @Composable
 fun AlarmTab(viewModel: ClockViewModel, modifier: Modifier, onEdit: (Alarm?) -> Unit) {
     val context = LocalContext.current
+    var sheetAlarm by remember { mutableStateOf<Alarm?>(null) }
+
+    sheetAlarm?.let { selected ->
+        ModalBottomSheetMMD(onDismissRequest = { sheetAlarm = null }) {
+            Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp)) {
+                TextMMD(
+                    formatAlarmTime(context, selected.hour, selected.minute),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(Modifier.height(20.dp))
+                OutlinedButtonMMD(
+                    onClick = {
+                        viewModel.deleteAlarm(selected)
+                        sheetAlarm = null
+                    },
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                ) { TextMMD("Delete", fontSize = 18.sp) }
+                Spacer(Modifier.height(12.dp))
+                OutlinedButtonMMD(
+                    onClick = { sheetAlarm = null },
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                ) { TextMMD("Cancel", fontSize = 18.sp) }
+                Spacer(Modifier.height(16.dp))
+            }
+        }
+    }
+
     Box(modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             if (Build.VERSION.SDK_INT in 31..32 &&
@@ -73,6 +103,7 @@ fun AlarmTab(viewModel: ClockViewModel, modifier: Modifier, onEdit: (Alarm?) -> 
                         AlarmRow(
                             alarm = alarm,
                             onClick = { onEdit(alarm) },
+                            onLongPress = { sheetAlarm = alarm },
                             onToggle = { viewModel.setAlarmEnabled(alarm, it) },
                         )
                         HorizontalDividerMMD()
@@ -87,16 +118,19 @@ fun AlarmTab(viewModel: ClockViewModel, modifier: Modifier, onEdit: (Alarm?) -> 
 }
 
 @Composable
-private fun AlarmRow(alarm: Alarm, onClick: () -> Unit, onToggle: (Boolean) -> Unit) {
+private fun AlarmRow(
+    alarm: Alarm,
+    onClick: () -> Unit,
+    onLongPress: () -> Unit,
+    onToggle: (Boolean) -> Unit,
+) {
     val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick,
-            )
+            .pointerInput(alarm) {
+                detectTapGestures(onTap = { onClick() }, onLongPress = { onLongPress() })
+            }
             .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -145,14 +179,14 @@ fun AlarmEditScreen(
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             StepperColumn(hour, max = 23) { hour = it }
             TextMMD(":", fontSize = 44.sp, fontWeight = FontWeight.Black,
                 modifier = Modifier.padding(horizontal = 16.dp))
             StepperColumn(minute, max = 59) { minute = it }
         }
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(28.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -181,9 +215,9 @@ fun AlarmEditScreen(
                 }
             }
         }
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(8.dp))
         TextMMD(describeDays(days), fontSize = 14.sp)
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(28.dp))
         val soundName = sound
             ?.let { RingtoneManager.getRingtone(context, Uri.parse(it))?.getTitle(context) }
             ?: "Default"
@@ -202,9 +236,9 @@ fun AlarmEditScreen(
                         )
                 )
             },
-            modifier = Modifier.fillMaxWidth().height(48.dp),
+            modifier = Modifier.fillMaxWidth().height(52.dp),
         ) { TextMMD("Sound: $soundName", fontSize = 16.sp) }
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(32.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -215,7 +249,7 @@ fun AlarmEditScreen(
                         viewModel.deleteAlarm(alarm)
                         onDone()
                     },
-                    modifier = Modifier.weight(1f).height(48.dp),
+                    modifier = Modifier.weight(1f).height(52.dp),
                 ) { TextMMD("Delete", fontSize = 18.sp) }
             }
             OutlinedButtonMMD(
@@ -226,7 +260,7 @@ fun AlarmEditScreen(
                     )
                     onDone()
                 },
-                modifier = Modifier.weight(1f).height(48.dp),
+                modifier = Modifier.weight(1f).height(52.dp),
             ) { TextMMD("Save", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
         }
     }
