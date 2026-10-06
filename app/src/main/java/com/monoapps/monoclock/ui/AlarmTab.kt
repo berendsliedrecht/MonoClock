@@ -55,10 +55,12 @@ fun AlarmTab(viewModel: ClockViewModel, modifier: Modifier, onEdit: (Alarm?) -> 
     sheetAlarm?.let { selected ->
         ModalBottomSheetMMD(onDismissRequest = { sheetAlarm = null }) {
             Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp)) {
+                TextMMD("Delete alarm?", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(8.dp))
                 TextMMD(
-                    formatAlarmTime(context, selected.hour, selected.minute),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
+                    formatAlarmTime(context, selected.hour, selected.minute) +
+                        ", " + describeDays(selected.days),
+                    fontSize = 16.sp,
                 )
                 Spacer(Modifier.height(20.dp))
                 OutlinedButtonMMD(

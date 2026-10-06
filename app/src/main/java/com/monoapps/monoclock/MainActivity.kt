@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.AlarmClock
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -109,6 +110,15 @@ class MainActivity : ComponentActivity() {
     private fun App() {
         var tab by tabState
         var editor by editorState
+
+        // Physical back button: step back inside the app (editor, then the
+        // main tab) before letting the system close it.
+        BackHandler(enabled = editor != null || tab != Tab.Alarms) {
+            when {
+                editor != null -> editor = null
+                else -> tab = Tab.Alarms
+            }
+        }
 
         // Alarms can ring and reschedule while the app is open or backgrounded.
         val lifecycleOwner = LocalLifecycleOwner.current
