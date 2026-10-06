@@ -4,6 +4,12 @@ A clock app for the Mudita Kompakt, built with MMD (Mudita Mindful Design). It r
 
 The app leans on Android's own machinery wherever it can: alarms and the timer are scheduled through the system alarm clock service (they ring on time even when the phone sleeps, and the next alarm shows in the status bar), the sound is your system default alarm sound at the alarm volume, and other apps can set alarms or timers here through the standard Android clock intents.
 
+<p align="center">
+  <img src="docs/alarms.png" width="30%" alt="Alarm list with a weekday alarm at 08:15 toggled on">
+  <img src="docs/timer.png" width="30%" alt="Timer picker at 5 minutes with additive preset buttons and Reset and Start">
+  <img src="docs/stopwatch.png" width="30%" alt="Stopwatch at zero with a Start button">
+</p>
+
 ## Install
 
 Download the latest APK from the [releases page](../../releases) and sideload it,
