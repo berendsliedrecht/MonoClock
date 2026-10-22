@@ -7,7 +7,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -124,14 +123,14 @@ fun RepeatButton(label: String, onStep: () -> Unit) {
     }
 }
 
-/** Outlined round add button (MMD's filled FAB violates the no-infill rule). */
+/** Outlined squircle add button (MMD's filled FAB violates the no-infill rule). */
 @Composable
 fun OutlinedFab(label: String, onClick: () -> Unit) {
     val click by rememberUpdatedState(onClick)
     Box(
         modifier = Modifier
-            .size(64.dp)
-            .border(2.dp, Color.Black, CircleShape)
+            .size(56.dp)
+            .border(2.dp, Color.Black, RoundedCornerShape(12.dp))
             .pointerInput(Unit) { detectTapGestures { click() } },
         contentAlignment = Alignment.Center,
     ) {
