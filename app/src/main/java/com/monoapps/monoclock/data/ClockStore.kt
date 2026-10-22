@@ -25,6 +25,7 @@ class ClockStore(context: Context) {
                 days = (0 until days.length()).map { days.getInt(it) }.toSet(),
                 enabled = o.getBoolean("enabled"),
                 sound = o.optString("sound", "").takeIf { it.isNotEmpty() },
+                deleteAfterUse = o.optBoolean("deleteAfterUse", false),
             )
         }
     }
@@ -40,6 +41,7 @@ class ClockStore(context: Context) {
                     .put("days", JSONArray(a.days.sorted()))
                     .put("enabled", a.enabled)
                     .put("sound", a.sound ?: "")
+                    .put("deleteAfterUse", a.deleteAfterUse)
             )
         }
         prefs.edit().putString("alarms", arr.toString()).commit()
@@ -52,6 +54,8 @@ class ClockStore(context: Context) {
     }
 
     fun updateAlarm(alarm: Alarm) = saveAlarms(alarms().map { if (it.id == alarm.id) alarm else it })
+
+    fun deleteAlarm(id: Int) = saveAlarms(alarms().filter { it.id != id })
 
     // Timer: either running (end wall-clock time set) or paused (remaining set)
 

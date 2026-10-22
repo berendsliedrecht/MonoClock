@@ -142,7 +142,10 @@ private fun AlarmRow(
                 fontSize = 36.sp,
                 fontWeight = if (alarm.enabled) FontWeight.Bold else FontWeight.Normal,
             )
-            TextMMD(describeDays(alarm.days), fontSize = 14.sp)
+            TextMMD(
+                if (alarm.deleteAfterUse) "Once, then deleted" else describeDays(alarm.days),
+                fontSize = 14.sp,
+            )
         }
         SwitchMMD(checked = alarm.enabled, onCheckedChange = onToggle)
     }
@@ -161,6 +164,7 @@ fun AlarmEditScreen(
     var minute by remember { mutableIntStateOf(alarm?.minute ?: 0) }
     var days by remember { mutableStateOf(alarm?.days ?: emptySet<Int>()) }
     var sound by remember { mutableStateOf(alarm?.sound) }
+    var deleteAfterUse by remember { mutableStateOf(alarm?.deleteAfterUse ?: false) }
 
     val defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
     val pickSound = rememberLauncherForActivityResult(
@@ -219,7 +223,20 @@ fun AlarmEditScreen(
         }
         Spacer(Modifier.height(8.dp))
         TextMMD(describeDays(days), fontSize = 14.sp)
-        Spacer(Modifier.height(28.dp))
+        if (days.isEmpty()) {
+            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextMMD("Delete after ringing", fontSize = 16.sp)
+                SwitchMMD(checked = deleteAfterUse, onCheckedChange = { deleteAfterUse = it })
+            }
+            Spacer(Modifier.height(16.dp))
+        } else {
+            Spacer(Modifier.height(28.dp))
+        }
         val soundName = sound
             ?.let { RingtoneManager.getRingtone(context, Uri.parse(it))?.getTitle(context) }
             ?: "Default"
@@ -256,9 +273,13 @@ fun AlarmEditScreen(
             }
             OutlinedButtonMMD(
                 onClick = {
-                    if (alarm == null) viewModel.addAlarm(hour, minute, days, sound)
+                    val oneTime = deleteAfterUse && days.isEmpty()
+                    if (alarm == null) viewModel.addAlarm(hour, minute, days, sound, oneTime)
                     else viewModel.updateAlarm(
-                        alarm.copy(hour = hour, minute = minute, days = days, enabled = true, sound = sound)
+                        alarm.copy(
+                            hour = hour, minute = minute, days = days,
+                            enabled = true, sound = sound, deleteAfterUse = oneTime,
+                        )
                     )
                     onDone()
                 },

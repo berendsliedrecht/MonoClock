@@ -50,7 +50,7 @@ class AlarmService : Service() {
     private var ringtone: Ringtone? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private val handler = Handler(Looper.getMainLooper())
-    private val silence = Runnable { stopRinging() }
+    private val silence = Runnable { deleteIfUsedUp(); stopRinging() }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -78,7 +78,10 @@ class AlarmService : Service() {
                 }
                 stopRinging()
             }
-            ACTION_DISMISS -> stopRinging()
+            ACTION_DISMISS -> {
+                deleteIfUsedUp()
+                stopRinging()
+            }
         }
         return START_NOT_STICKY
     }
@@ -121,6 +124,19 @@ class AlarmService : Service() {
         )
 
         handler.postDelayed(silence, SILENCE_AFTER_MILLIS)
+    }
+
+    /**
+     * Remove a delete-after-use alarm once it has served its purpose. Called
+     * on dismiss and auto-silence but not on snooze, where the alarm must
+     * survive to ring again.
+     */
+    private fun deleteIfUsedUp() {
+        val ring = ringing.value ?: return
+        if (ring.isTimer) return
+        val store = ClockStore(this)
+        store.alarms().find { it.id == ring.alarmId && it.deleteAfterUse }
+            ?.let { store.deleteAlarm(it.id) }
     }
 
     private fun stopRinging() {
