@@ -15,6 +15,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         if (isTimer) {
             store.clearTimer()
+            TimerNotification.cancel(context)
         } else {
             val alarm = store.alarms().find { it.id == id } ?: return
             if (!alarm.enabled) return

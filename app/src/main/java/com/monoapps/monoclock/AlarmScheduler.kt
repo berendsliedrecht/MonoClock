@@ -28,9 +28,13 @@ object AlarmScheduler {
 
     fun scheduleTimer(context: Context, endMillis: Long) {
         setAlarmClock(context, endMillis, TIMER_REQUEST, isTimer = true)
+        TimerNotification.show(context, endMillis)
     }
 
-    fun cancelTimer(context: Context) = cancel(context, TIMER_REQUEST)
+    fun cancelTimer(context: Context) {
+        cancel(context, TIMER_REQUEST)
+        TimerNotification.cancel(context)
+    }
 
     /** Re-arm everything after boot or a clock/timezone change. */
     fun rescheduleAll(context: Context) {
